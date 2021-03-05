@@ -28,8 +28,28 @@ namespace DeepDungeonDex
             ImGui.SetNextWindowSizeConstraints(new Vector2(250, 0), new Vector2(9001, 9001));
             ImGui.SetNextWindowBgAlpha(config.Opacity);
             ImGui.Begin("cool strati window", flags);
-            ImGui.Text("Name:\n"+TargetData.Name);
-            ImGui.NewLine();
+            int columnCount = (mobData.IsUndead ? 1 : 0) + (mobData.IsPatrol ? 1 : 0);
+            if (columnCount > 0) {
+                ImGui.Columns(columnCount, null, false);
+                ImGui.Text("Name:\n"+TargetData.Name);
+                ImGui.NextColumn();
+                if (mobData.IsPatrol) {
+                    ImGui.NextColumn();
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
+                    ImGui.Text("Patrol");
+                    ImGui.PopStyleColor();
+                }
+                if (mobData.IsUndead) {
+                    ImGui.NextColumn();
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFF00FF);
+                    ImGui.Text("Undead");
+                    ImGui.PopStyleColor();
+                }
+                ImGui.NewLine();
+            } else {
+                ImGui.Text("Name:\n"+TargetData.Name);
+                ImGui.NewLine();
+            }
             ImGui.Columns(3, null, false);
             ImGui.Text("Aggro Type:\n");
             ImGui.Text(mobData.Aggro.ToString());
@@ -43,7 +63,7 @@ namespace DeepDungeonDex
                     ImGui.PopStyleColor();
                     break;
                 case DataHandler.MobData.ThreatLevel.Caution:
-                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF00FFFF);
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFF003C);
                     ImGui.Text("Caution");
                     ImGui.PopStyleColor();
                     break;

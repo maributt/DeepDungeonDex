@@ -6,8 +6,11 @@ namespace DeepDungeonDex
     {
         public class MobData
         {
-            public bool? IsStunnable { get; set; }
-            public string MobNotes { get; set; }
+            public bool? IsStunnable { get; set; } = false;
+            public bool? IsUndead { get; set; } = false;
+            public bool? IsPatrol { get; set; } = false;
+            public string MobNotes { get; set; } = "";
+            
 
             public enum ThreatLevel
             {
@@ -38,6 +41,53 @@ namespace DeepDungeonDex
 
         private static readonly Dictionary<int, MobData> mobs = new Dictionary<int, MobData>()
             {
+
+                // // // PALACE OF THE DEAD // // //
+                
+                // PoTD floors 51-60
+                //pudding, buffs their damage
+                {4996, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, MobNotes="Spams Blizzard and buffs their damage, can be interrupted." }},
+                //gremlin, vuln up 10s, fire 2, sight
+                {5300, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight, MobNotes="Auto inflicts Vulnerability Up for 10s." }},
+                //deepeye, sight, hypnotize paralysis
+                {5299, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight, MobNotes="Casts a gaze spell inflicting paralysis." }},
+
+                // PoTD floors 131-140
+                //soul
+                {5398, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sound, IsUndead=true}},
+                //hecteyes
+                {5399, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sound}},
+                //ogre
+                {5400, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight}},
+                //mummy
+                {5401, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, IsUndead=true}},
+                //ahriman
+                {5402, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Sight, MobNotes="Casts Level 5 Petrify, a non-telegraphed conal AOE.\nThis causes 15 seconds of petrification." }},
+                //dahak
+                {5403, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight, MobNotes="Auto inflicts Disease (reduces Max HP and slows movement down)"}},
+                //monk
+                {5404, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, MobNotes="Will cast a pull-in spell into a point-blank AoE (can be interrupted and Arm's Lengthed)."}},
+                //troubador
+                {5405, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, MobNotes="Spams \"Dark\"\nCan be dodged by moving behind/away from the mob during the cast." }},
+                //taurus
+                {5406, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight }},
+                //guard
+                {5407, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight}},
+                //catoblepas
+                {5408, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Sight, IsPatrol=true, MobNotes="Casts a fast conal gaze attack (Eye of the Stunted):\nInflicts Minimum reducing your damage and movement speed.\nWill cast telegraphed AoE right after, be careful to bait early if hit by gaze." }},
+                //gourmand
+                {5409, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, MobNotes="Uses beatdown, hits a bit harder than an autoattack but nothing too scary."}},
+
+
+                // PoTD bosses & misc.
+                // mimic
+                {2566, new MobData {Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Proximity, IsStunnable=true, MobNotes="Can be preferrable over killing \"Dangerous\" mobs in higher floors.\nMake sure to interrupt or stun the pox cast!"}},
+                // floor 140 boss
+                {5410, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Boss, IsUndead=true, MobNotes="Kuribu's cast will deal 30K+ damage to this boss (with Strength).\nIf solo, Steel is recommended (you may have to use 2x Kuribus otherwise to regen HP)\nFast strat is as follows:\n3* Beams, Dodge, 2 Beams, Dodge, 3* Beams, Dodge, 2 Beams\n*The 3rd Beams will have to be slightly slidecast\n(Adds for no fast strat will die in 1 Beam)" }},
+                
+
+                // // // HEAVEN ON HIGH // // //
+
 				// HoH floors 1-9
                 { 7262, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight, IsStunnable=true, MobNotes="Auto inflicts Heavy debuff" } },
                 { 7263, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Sight, IsStunnable=true, MobNotes="Auto applies Physical Vuln Up every 10s" } },
