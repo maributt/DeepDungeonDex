@@ -6,9 +6,9 @@ namespace DeepDungeonDex
     {
         public class MobData
         {
-            public bool? IsStunnable { get; set; } = false;
-            public bool? IsUndead { get; set; } = false;
-            public bool? IsPatrol { get; set; } = false;
+            public bool? IsStunnable { get; set; }
+            public bool IsUndead { get; set; } = false;
+            public bool IsPatrol { get; set; } = false;
             public string MobNotes { get; set; } = "";
             
 
@@ -31,6 +31,7 @@ namespace DeepDungeonDex
                 Boss
             }
             public AggroType Aggro { get; set; }
+            public bool IsBloodAggro { get; set; } = false;
         }
 
         public static MobData Mobs(int nameID)
@@ -41,6 +42,10 @@ namespace DeepDungeonDex
 
         private static readonly Dictionary<int, MobData> mobs = new Dictionary<int, MobData>()
             {
+                // testing
+                // antelope stag
+                {4, new MobData { Threat=MobData.ThreatLevel.Dangerous, Aggro=MobData.AggroType.Sight, IsUndead=true, IsPatrol=true, IsBloodAggro=true, MobNotes="" }},
+
 
                 // // // PALACE OF THE DEAD // // //
                 
@@ -78,6 +83,29 @@ namespace DeepDungeonDex
                 //gourmand
                 {5409, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, MobNotes="Uses beatdown, hits a bit harder than an autoattack but nothing too scary."}},
 
+                // PoTD floors 141-150
+                //follower
+                {5411, new MobData {  }},
+                //ked
+                {5412, new MobData {  }},
+                //demon
+                {5413, new MobData {  } },
+                //gargoyle
+                {5414, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Sight}},
+                //knight
+                {5415, new MobData {  Threat=MobData.ThreatLevel.Caution, }},
+                //bhoot
+                {5416, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, IsBloodAggro=true }},
+                //hellhound
+                {5417, new MobData {  }},
+                //persona
+                {5418, new MobData {  }},
+                //succubus
+                {5419, new MobData {  }},
+                //manticore
+                {5421, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Proximity, IsPatrol=true, MobNotes="Opens with a gapcloser into a self damage buff.\nWatch out for \"Ripper Claw\" a frontal conal untelegraphed AoE, move behind/away to avoid." }},
+                //wraith
+                {5422, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Proximity, IsPatrol=true, IsUndead=true, MobNotes="Watch out for their \"Scream\" cast, can be interrupted but followed by Accursed Pox (191-200)\nLater Floors note:\nCareful to not pull one while fighting a Deep Palace Knight" }},
 
                 // PoTD bosses & misc.
                 // mimic

@@ -1,6 +1,12 @@
 ﻿
+using Dalamud.Game.Chat.SeStringHandling;
+using Dalamud.Plugin;
+using FFXIVClientStructs;
+using FFXIVClientStructs.Component.GUI;
 using ImGuiNET;
+using System;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace DeepDungeonDex
 {
@@ -8,10 +14,12 @@ namespace DeepDungeonDex
     {
         public bool IsVisible { get; set; }
         private Configuration config;
+        private DalamudPluginInterface pluginInterface;
 
-        public PluginUI(Configuration config)
+        public PluginUI(Configuration config, DalamudPluginInterface pluginInterface)
         {
             this.config = config;
+            this.pluginInterface = pluginInterface;
         }
 
         public void Draw()
@@ -20,36 +28,62 @@ namespace DeepDungeonDex
                 return;
             var mobData = DataHandler.Mobs(TargetData.NameID);
             if (mobData == null) return;
-            var flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
+
+            // Get Floor number so that the MobData tips can be tailored down the line for more dangerous floors
+            int? floorLowerBound = null;
+            int? floorUpperBound = null;
+            bool InDeepDungeon = this.pluginInterface.ClientState.Condition[Dalamud.Game.ClientState.ConditionFlag.InDeepDungeon];
+            var windowTitle = "cool strati window";
+            if (InDeepDungeon) { 
+                unsafe
+                {
+                    AtkUnitBase* _ToDoListBasePtr = (AtkUnitBase*)pluginInterface.Framework.Gui.GetUiObjectByName("_ToDoList", 1);
+                    AtkComponentNode* _ToDoListComponentPtr = (AtkComponentNode*)_ToDoListBasePtr->RootNode->ChildNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode;
+                    AtkTextNode* dutyNamePtr = (AtkTextNode*)((_ToDoListComponentPtr->Component)->ULDData.RootNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode->PrevSiblingNode);
+                    string dutyNameStr = Marshal.PtrToStringAnsi(new IntPtr(dutyNamePtr->NodeText.StringPtr));
+                    string[] aDutyName = String.Join("", String.Join("",dutyNameStr.Split(')')).Split('(')).Split(' ');
+
+                    aDutyName = aDutyName[aDutyName.Length-1].Split('-');
+                    floorLowerBound = int.Parse(aDutyName[0]);
+                    floorUpperBound = int.Parse(aDutyName[1]);
+                }
+            }
+
+            //var flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
+            var flags = ImGuiWindowFlags.NoScrollbar;
             if (config.IsClickthrough)
             {
                 flags |= ImGuiWindowFlags.NoInputs;
             }
             ImGui.SetNextWindowSizeConstraints(new Vector2(250, 0), new Vector2(9001, 9001));
             ImGui.SetNextWindowBgAlpha(config.Opacity);
-            ImGui.Begin("cool strati window", flags);
+
+            if (InDeepDungeon)
+            {
+                windowTitle += " (Floors " + floorLowerBound + "-" + floorUpperBound + ")";
+            }
+            ImGui.Begin(windowTitle, flags);
+            ImGui.Columns(2, null, false);
+            ImGui.Text("Name:\n"+TargetData.Name);
+            ImGui.NextColumn();
             int columnCount = (mobData.IsUndead ? 1 : 0) + (mobData.IsPatrol ? 1 : 0);
             if (columnCount > 0) {
-                ImGui.Columns(columnCount, null, false);
-                ImGui.Text("Name:\n"+TargetData.Name);
-                ImGui.NextColumn();
                 if (mobData.IsPatrol) {
-                    ImGui.NextColumn();
                     ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
                     ImGui.Text("Patrol");
                     ImGui.PopStyleColor();
                 }
                 if (mobData.IsUndead) {
-                    ImGui.NextColumn();
                     ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFF00FF);
                     ImGui.Text("Undead");
                     ImGui.PopStyleColor();
                 }
-                ImGui.NewLine();
             } else {
-                ImGui.Text("Name:\n"+TargetData.Name);
                 ImGui.NewLine();
+                ImGui.Columns(1, null, false);
             }
+            
+            ImGui.NewLine();
             ImGui.Columns(3, null, false);
             ImGui.Text("Aggro Type:\n");
             ImGui.Text(mobData.Aggro.ToString());
@@ -96,7 +130,9 @@ namespace DeepDungeonDex
                     ImGui.PopStyleColor();
                     break;
                 default:
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF919191);
                     ImGui.Text("Untested");
+                    ImGui.PopStyleColor();
                     break;
             }
             ImGui.NextColumn();

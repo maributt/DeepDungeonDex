@@ -9,7 +9,7 @@ namespace DeepDungeonDex
 {
     public class Plugin : IDalamudPlugin
     {
-        private DalamudPluginInterface pluginInterface;
+        public DalamudPluginInterface pluginInterface;
         private Configuration config;
         private PluginUI ui;
         private ConfigUI cui;
@@ -23,7 +23,7 @@ namespace DeepDungeonDex
 
             this.config = (Configuration)this.pluginInterface.GetPluginConfig() ?? new Configuration();
             this.config.Initialize(this.pluginInterface);
-            this.ui = new PluginUI(config);
+            this.ui = new PluginUI(config, pluginInterface);
             this.cui = new ConfigUI(config.Opacity, config.IsClickthrough, config);
             this.pluginInterface.UiBuilder.OnBuildUi += this.ui.Draw;
             this.pluginInterface.UiBuilder.OnBuildUi += this.cui.Draw;
@@ -43,11 +43,11 @@ namespace DeepDungeonDex
 
         public void GetData(Framework framework)
         {
-            if (!this.pluginInterface.ClientState.Condition[Dalamud.Game.ClientState.ConditionFlag.InDeepDungeon])
+            /*if (!this.pluginInterface.ClientState.Condition[Dalamud.Game.ClientState.ConditionFlag.InDeepDungeon])
             {
                 ui.IsVisible = false;
                 return;
-            }
+            }*/
             var target = pluginInterface.ClientState.Targets.CurrentTarget;
             if (target == null || target == previousTarget) 
             {

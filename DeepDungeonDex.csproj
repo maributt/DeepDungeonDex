@@ -15,6 +15,10 @@
       <HintPath Condition="Exists('..\..\Dalamud\Dalamud\bin\Debug')">..\..\Dalamud\Dalamud\bin\Debug\Dalamud.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="FFXIVClientStructs">
+      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.3.4')">$(AppData)\XIVLauncher\addon\Hooks\5.2.3.4\FFXIVClientStructs.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="ImGui.NET">
       <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks')">$(AppData)\XIVLauncher\addon\Hooks\ImGui.NET.dll</HintPath>
       <HintPath Condition="Exists('$(DalamudHooks)')">$(DalamudHooks)\ImGuiScene.dll</HintPath>
