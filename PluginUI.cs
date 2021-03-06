@@ -1,6 +1,7 @@
 ﻿
 using Dalamud.Game.Chat.SeStringHandling;
 using Dalamud.Plugin;
+using Dalamud.Interface;
 using FFXIVClientStructs;
 using FFXIVClientStructs.Component.GUI;
 using ImGuiNET;
@@ -49,8 +50,8 @@ namespace DeepDungeonDex
                 }
             }
 
-            //var flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
-            var flags = ImGuiWindowFlags.NoScrollbar;
+            var flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
+            //var flags = ImGuiWindowFlags.NoScrollbar;
             if (config.IsClickthrough)
             {
                 flags |= ImGuiWindowFlags.NoInputs;
@@ -63,30 +64,83 @@ namespace DeepDungeonDex
                 windowTitle += " (Floors " + floorLowerBound + "-" + floorUpperBound + ")";
             }
             ImGui.Begin(windowTitle, flags);
-            ImGui.Columns(2, null, false);
-            ImGui.Text("Name:\n"+TargetData.Name);
-            ImGui.NextColumn();
-            int columnCount = (mobData.IsUndead ? 1 : 0) + (mobData.IsPatrol ? 1 : 0);
-            if (columnCount > 0) {
-                if (mobData.IsPatrol) {
-                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFF0000FF);
-                    ImGui.Text("Patrol");
-                    ImGui.PopStyleColor();
-                }
-                if (mobData.IsUndead) {
-                    ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFF00FF);
-                    ImGui.Text("Undead");
-                    ImGui.PopStyleColor();
-                }
-            } else {
-                ImGui.NewLine();
-                ImGui.Columns(1, null, false);
+            ImGui.Text(TargetData.Name);
+            ImGui.PopTextWrapPos();
+            ImGui.SameLine();
+            ImGui.Text("( ");
+            ImGui.SameLine();
+            // Special details column: Undead, Patrol, Blood Aggro, etc
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGui.Text(DataHandler.MobData.AggroTypeExtra[mobData.Aggro][0]);
+            ImGui.PopFont();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(400f);
+                ImGui.TextWrapped(DataHandler.MobData.AggroTypeExtra[mobData.Aggro][1]);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
             }
+            ImGui.SameLine();
+            if (mobData.IsPatrol) {
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF1249FF);
+                ImGui.Text(FontAwesomeIcon.Walking.ToIconString());
+                ImGui.PopStyleColor();
+                ImGui.PopFont();
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.PushTextWrapPos(400f);
+                    ImGui.TextWrapped("Enemy is a patrol unit.\nDon't let it creep up on you!");
+                    ImGui.PopTextWrapPos();
+                    ImGui.EndTooltip();
+                }
+                ImGui.SameLine();
+            }
+            if (mobData.IsUndead) {
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFFFF00FF);
+                ImGui.Text(FontAwesomeIcon.Ghost.ToIconString());
+                ImGui.PopStyleColor();
+                ImGui.PopFont();
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.PushTextWrapPos(400f);
+                    ImGui.TextWrapped("Enemy type is Undead.\nWeak to Pomander of Resolution.");
+                    ImGui.PopTextWrapPos();
+                    ImGui.EndTooltip();
+                }
+                ImGui.SameLine();
+            }
+            if (mobData.IsBloodAggro)
+            {
+                ImGui.PushFont(UiBuilder.IconFont);
+                ImGui.PushStyleColor(ImGuiCol.Text, 0xFF2300AF);
+                ImGui.Text(FontAwesomeIcon.Tint.ToIconString());
+                ImGui.PopStyleColor();
+                ImGui.PopFont();
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.PushTextWrapPos(400f);
+                    ImGui.TextWrapped("Enemy will aggro if your HP isn't topped up.");
+                    ImGui.PopTextWrapPos();
+                    ImGui.EndTooltip();
+                }
+                ImGui.SameLine();
+            }
+            ImGui.Text(" )");
+            ImGui.NewLine();
             
             ImGui.NewLine();
             ImGui.Columns(3, null, false);
             ImGui.Text("Aggro Type:\n");
+            ImGui.PushStyleColor(ImGuiCol.Text, 0xFFB0B0B0);
             ImGui.Text(mobData.Aggro.ToString());
+            ImGui.PopStyleColor();
+            
             ImGui.NextColumn();
             ImGui.Text("Threat:\n");
             switch (mobData.Threat)
