@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using Dalamud.Interface;
 namespace DeepDungeonDex
 {
     public class DataHandler
@@ -10,6 +10,8 @@ namespace DeepDungeonDex
             public bool IsUndead { get; set; } = false;
             public bool IsPatrol { get; set; } = false;
             public string MobNotes { get; set; } = "";
+            public MobData? encounteredAgain { get; set; }
+            public int? encounteredAgainFromFloor { get; set; }
             
 
             public enum ThreatLevel
@@ -30,6 +32,16 @@ namespace DeepDungeonDex
                 Proximity,
                 Boss
             }
+
+            public static readonly Dictionary<AggroType, string[]> AggroTypeExtra = new Dictionary<AggroType, string[]>()
+            {
+                {AggroType.Unspecified, new string[] {FontAwesomeIcon.QuestionCircle.ToIconString(), "Unspecified Aggro Type.\nBe careful with this mob."} },
+                {AggroType.Sight, new string[] {FontAwesomeIcon.Eye.ToIconString(), "You can sneak past this mob by walking behind its back.\nYou can somewhat walk into its hitbox too."}},
+                {AggroType.Sound, new string[] {FontAwesomeIcon.VolumeUp.ToIconString(), "You can sneak past this mob by walking."} },
+                {AggroType.Proximity, new string[] {FontAwesomeIcon.Wifi.ToIconString(), "This mob will automatically aggro if you step too close to it."} },
+                {AggroType.Boss, new string[] {FontAwesomeIcon.SkullCrossbones.ToIconString(), ""} }
+            };
+
             public AggroType Aggro { get; set; }
             public bool IsBloodAggro { get; set; } = false;
         }
@@ -93,7 +105,9 @@ namespace DeepDungeonDex
                 //gargoyle
                 {5414, new MobData { Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Sight}},
                 //knight
-                {5415, new MobData {  Threat=MobData.ThreatLevel.Caution, }},
+                {5415, new MobData {  Threat=MobData.ThreatLevel.Caution, Aggro=MobData.AggroType.Sight, MobNotes="",encounteredAgain=new MobData {
+                    Threat=MobData.ThreatLevel.Dangerous, Aggro=MobData.AggroType.Sight, MobNotes="Do NOT pull this mob with a Wraith around."
+                }, encounteredAgainFromFloor=190}},
                 //bhoot
                 {5416, new MobData { Threat=MobData.ThreatLevel.Easy, Aggro=MobData.AggroType.Proximity, IsBloodAggro=true }},
                 //hellhound
